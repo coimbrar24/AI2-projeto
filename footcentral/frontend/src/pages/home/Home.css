@@ -1,0 +1,60 @@
+body {
+    background: #010409; /* quase preto */
+    color: white;
+}
+
+.fc-card {
+    background: #0f172a;
+    border: 1px solid #1e293b;
+    border-radius: 18px;
+    padding: 24px;
+    color: white;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .45);
+}
+
+.fc-match {
+    background: #111827;
+    border: 1px solid #1f2937;
+    padding: 18px;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    transition: .2s;
+    cursor: pointer;
+}
+
+.fc-match:hover {
+    background: #1e293b;
+    border-color: #22c55e;
+    transform: translateY(-2px);
+}
+
+.fc-news {
+    background: #111827;
+    border: 1px solid #1f2937;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    transition: .2s;
+    cursor: pointer;
+}
+
+.fc-news:hover {
+    background: #1e293b;
+    border-color: #22c55e;
+}
+
+.fc-league-btn {
+    width: 100%;
+    background: transparent;
+    color: white;
+    border: none;
+    padding: 12px;
+    text-align: left;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    transition: .2s;
+}
+
+.fc-league-btn:hover {
+    background: #1e293b;
+}

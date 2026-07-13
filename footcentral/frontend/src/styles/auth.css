@@ -1,0 +1,139 @@
+:root {
+  --bg: #010409;
+  --card: #0d1117;
+  --card-hover: #161b22;
+  --input: #21262d;
+  --border: #30363d;
+  --text: #f0f6fc;
+  --text-muted: #8b949e;
+  --primary: #22c55e;
+  --primary-hover: #16a34a;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg) !important;
+  color: var(--text);
+  font-family: "Inter", "Segoe UI", sans-serif;
+}
+
+/* Página */
+
+main {
+  background: var(--bg);
+}
+
+/* Cartão */
+
+.auth-card {
+  background: var(--card) !important;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  color: var(--text);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, .45);
+}
+
+/* Logo */
+
+.auth-logo-img {
+  max-width: 180px;
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto 1rem;
+}ow: 0 0 25px rgba(34, 197, 94, .35);
+}
+
+/* Texto */
+
+.auth-title {
+  color: white;
+  font-weight: 700;
+}
+
+.auth-subtitle {
+  color: var(--text-muted);
+}
+
+/* Labels */
+
+.form-label {
+  color: white;
+  font-weight: 500;
+}
+
+/* Inputs */
+
+.form-control {
+  background: var(--input) !important;
+  border: 1px solid var(--border) !important;
+  color: white !important;
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.form-control::placeholder {
+  color: var(--text-muted);
+}
+
+.form-control:focus {
+  background: var(--input) !important;
+  color: white !important;
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 .25rem rgba(34, 197, 94, .18);
+}
+
+/* Botão */
+
+.btn-football {
+  background: var(--primary);
+  color: black;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  padding: 12px;
+  transition: .2s;
+}
+
+.btn-football:hover {
+  background: var(--primary-hover);
+  color: black;
+  transform: translateY(-2px);
+}
+
+.btn-football:disabled {
+  opacity: .7;
+}
+
+/* Links */
+
+.auth-link {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.auth-link:hover {
+  color: #4ade80;
+}
+
+/* Alertas */
+
+.alert {
+  border-radius: 12px;
+}
+
+/* Seleção */
+
+::selection {
+  background: var(--primary);
+  color: black;
+}
