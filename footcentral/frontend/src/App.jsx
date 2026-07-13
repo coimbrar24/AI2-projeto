@@ -1,10 +1,14 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
+import { FavoritesProvider } from "./context/FavoritesContext";
 
 import Home from "./pages/home/Home";
 import Login from "./pages/login/Login";
 import Register from "./pages/register/Register";
 import Dashboard from "./pages/dashboard/Dashboard";
+import Search from "./pages/search/Search";
+import Team from "./pages/team/Team";
+import Favorites from "./pages/favorites/Favorites";
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated } = useAuth();
@@ -24,14 +28,14 @@ function AppRoutes() {
       <Route
         path="/login"
         element={
-          isAuthenticated ? <Navigate to="/dashboard" replace /> : <Login />
+          isAuthenticated ? <Navigate to="/" replace /> : <Login />
         }
       />
 
       <Route
         path="/register"
         element={
-          isAuthenticated ? <Navigate to="/dashboard" replace /> : <Register />
+          isAuthenticated ? <Navigate to="/" replace /> : <Register />
         }
       />
 
@@ -47,9 +51,18 @@ function AppRoutes() {
 
       {/* Rotas futuras */}
       <Route path="/competitions" element={<div>Competições</div>} />
-      <Route path="/teams" element={<div>Equipas</div>} />
+      <Route path="/search" element={<Search />} />
+      <Route path="/teams" element={<Search />} />
+      <Route path="/teams/:id" element={<Team />} />
       <Route path="/news" element={<div>Notícias</div>} />
-      <Route path="/favorites" element={<div>Favoritos</div>} />
+      <Route
+        path="/favorites"
+        element={
+          <ProtectedRoute>
+            <Favorites />
+          </ProtectedRoute>
+        }
+      />
 
       {/* Qualquer rota inválida */}
       <Route path="*" element={<Navigate to="/" replace />} />
@@ -60,9 +73,11 @@ function AppRoutes() {
 function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <AppRoutes />
-      </BrowserRouter>
+      <FavoritesProvider>
+        <BrowserRouter>
+          <AppRoutes />
+        </BrowserRouter>
+      </FavoritesProvider>
     </AuthProvider>
   );
 }

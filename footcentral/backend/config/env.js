@@ -16,6 +16,10 @@ const env = {
     secret: process.env.JWT_SECRET,
     expiresIn: process.env.JWT_EXPIRES_IN || '1d',
   },
+  footballApi: {
+    baseUrl: process.env.FOOTBALL_API_URL || 'https://api.football-data.org/v4',
+    key: process.env.FOOTBALL_API_KEY,
+  },
 };
 
 module.exports = { env };

@@ -1,155 +1,284 @@
-/* ===========================
-   Navbar
-=========================== */
-
 .fc-navbar {
-    background: #0d1117;
-    border-bottom: 1px solid #30363d;
-    height: 72px;
-    padding: 0;
-    display: flex;
-    align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  height: 68px;
+  border-bottom: 1px solid #252b35;
+  background: rgba(10, 13, 19, .96);
+  backdrop-filter: blur(14px);
 }
 
-/* ===========================
-   Logo
-=========================== */
+.fc-navbar-inner {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  width: min(1400px, 100%);
+  height: 100%;
+  margin: 0 auto;
+  padding: 0 24px;
+}
 
-.navbar-brand {
-    display: flex;
-    align-items: center;
-    padding: 0;
-    margin-right: 2rem;
+.fc-navbar-brand {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
 }
 
 .fc-navbar-logo {
-    height: 42px;
-    width: auto;
-    display: block;
-    transition: transform .2s ease;
+  display: block;
+  width: auto;
+  height: 40px;
+  transition: transform .18s ease;
 }
 
 .fc-navbar-logo:hover {
-    transform: scale(1.03);
+  transform: scale(1.025);
 }
-
-/* ===========================
-   Pesquisa
-=========================== */
 
 .fc-search {
-    width: 450px;
-    margin-right: 3rem;
+  align-items: center;
+  gap: 9px;
+  height: 39px;
+  padding: 0 14px;
+  border: 1px solid #303742;
+  border-radius: 22px;
+  background: #1a1f28;
+  color: #7f8997;
 }
 
-.fc-search .form-control {
-    height: 42px;
-    background: #161b22;
-    border: 1px solid #30363d;
-    border-radius: 25px;
-    color: #f0f6fc;
-    padding: 0 18px;
-    transition: .2s;
+.fc-search-desktop {
+  display: flex;
+  width: min(350px, 28vw);
 }
 
-.fc-search .form-control::placeholder {
-    color: #8b949e;
+.fc-search-mobile {
+  display: none;
 }
 
-.fc-search .form-control:focus {
-    background: #161b22;
-    color: white;
-    border-color: #22c55e;
-    box-shadow: 0 0 0 .2rem rgba(34,197,94,.15);
+.fc-search input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #f4f6f8;
+  font-size: .82rem;
 }
 
-/* ===========================
-   Menu
-=========================== */
-
-.fc-navbar .navbar-nav {
-    gap: 10px;
+.fc-search-clear,
+.fc-search-submit {
+  display: grid;
+  place-items: center;
+  flex: 0 0 25px;
+  width: 25px;
+  height: 25px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #858e9b;
 }
 
-.fc-navbar .nav-link {
-    color: #d1d5db !important;
-    font-size: 15px;
-    font-weight: 600;
-    padding: .5rem .9rem;
-    border-radius: 10px;
-    transition: .2s;
+.fc-search-submit {
+  flex-basis: 20px;
+  width: 20px;
+  height: 20px;
 }
 
-.fc-navbar .nav-link:hover,
-.fc-navbar .nav-link.active {
-    color: #22c55e !important;
-    background: rgba(34,197,94,.08);
+.fc-search-clear:hover,
+.fc-search-submit:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, .07);
 }
 
-/* ===========================
-   Botão Perfil
-=========================== */
-
-.fc-profile-btn {
-    width: 42px;
-    height: 42px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    background: transparent;
-    border: none;
-    border-radius: 50%;
-
-    color: #d1d5db;
-    transition: .2s;
+.fc-search input::placeholder {
+  color: #838c99;
 }
 
-.fc-profile-btn:hover {
-    color: #22c55e;
-    background: rgba(255,255,255,.05);
+.fc-search:focus-within {
+  border-color: #21c975;
+  box-shadow: 0 0 0 3px rgba(33, 201, 117, .1);
 }
 
-/* ===========================
-   Dropdown
-=========================== */
+.fc-nav-content {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  min-width: 0;
+  margin-left: auto;
+}
+
+.fc-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.fc-nav-link {
+  display: block;
+  padding: 9px 11px;
+  border-radius: 8px;
+  color: #c7cdd5;
+  font-size: .82rem;
+  font-weight: 680;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: .18s ease;
+}
+
+.fc-nav-link:hover,
+.fc-nav-link.active {
+  color: #fff;
+  background: rgba(255, 255, 255, .055);
+}
+
+.fc-nav-link.active {
+  color: #21c975;
+}
+
+.fc-account-menu {
+  position: relative;
+}
+
+.fc-profile-btn,
+.fc-menu-btn {
+  display: grid;
+  place-items: center;
+  width: 39px;
+  height: 39px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #cbd1d9;
+}
+
+.fc-profile-btn:hover,
+.fc-menu-btn:hover {
+  color: #21c975;
+  background: rgba(255,255,255,.06);
+}
+
+.fc-menu-btn {
+  display: none;
+  margin-left: auto;
+  font-size: 1.55rem;
+}
 
 .fc-dropdown {
-    background: #161b22;
-    border: 1px solid #30363d;
-    border-radius: 12px;
-    padding: .4rem;
-    min-width: 220px;
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  display: grid;
+  width: 210px;
+  padding: 7px;
+  border: 1px solid #303742;
+  border-radius: 11px;
+  background: #151a22;
+  box-shadow: 0 18px 45px rgba(0,0,0,.4);
 }
 
-.fc-dropdown .dropdown-item {
-    color: #f0f6fc;
+.fc-dropdown::before {
+  content: "";
+  position: absolute;
+  top: -13px;
+  right: 0;
+  width: 42px;
+  height: 13px;
+}
+
+.fc-dropdown a,
+.fc-dropdown button,
+.fc-dropdown-user {
+  padding: 9px 10px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: #e6e9ed;
+  font-size: .8rem;
+  text-align: left;
+  text-decoration: none;
+}
+
+.fc-dropdown a:hover,
+.fc-dropdown button:hover {
+  color: #21c975;
+  background: #202630;
+}
+
+.fc-dropdown-user {
+  margin-bottom: 4px;
+  border-bottom: 1px solid #303742;
+  border-radius: 0;
+  color: #8f99a6;
+  font-weight: 700;
+}
+
+.fc-dropdown .is-danger {
+  color: #ff6879;
+}
+
+@media (max-width: 1180px) {
+  .fc-search-desktop {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .fc-navbar-inner {
+    padding: 0 14px;
+  }
+
+  .fc-navbar-logo {
+    height: 38px;
+  }
+
+  .fc-menu-btn {
+    display: grid;
+  }
+
+  .fc-nav-content {
+    position: absolute;
+    top: 68px;
+    right: 0;
+    left: 0;
+    display: none;
+    align-items: stretch;
+    padding: 14px;
+    border-bottom: 1px solid #303742;
+    background: #10141b;
+    box-shadow: 0 18px 30px rgba(0,0,0,.35);
+  }
+
+  .fc-nav-content.show {
+    display: grid;
+  }
+
+  .fc-search-mobile {
+    display: flex;
+    width: 100%;
+  }
+
+  .fc-nav-links {
+    display: grid;
+  }
+
+  .fc-nav-link {
+    padding: 10px 12px;
+  }
+
+  .fc-profile-btn {
+    width: 100%;
     border-radius: 8px;
-    padding: .65rem .8rem;
-}
+    background: #1a2029;
+  }
 
-.fc-dropdown .dropdown-item:hover {
-    background: #21262d;
-    color: #22c55e;
-}
-
-.fc-dropdown .dropdown-divider {
-    border-color: #30363d;
-}
-
-/* ===========================
-   Mobile
-=========================== */
-
-.navbar-toggler {
-    border: 1px solid #30363d;
-}
-
-.navbar-toggler:focus {
+  .fc-dropdown {
+    position: static;
+    width: 100%;
+    margin-top: 6px;
     box-shadow: none;
-}
-
-.navbar-toggler-icon {
-    filter: invert(1);
+  }
 }

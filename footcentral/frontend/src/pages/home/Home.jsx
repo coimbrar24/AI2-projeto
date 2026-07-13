@@ -1,181 +1,203 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { IoCalendarOutline, IoRadioButtonOn } from "react-icons/io5";
 import { useAuth } from "../../context/AuthContext";
 import Navbar from "../../components/Navbar";
-import footballApi from "../../services/footballApi";
+import CompetitionCard from "../../components/CompetitionCard";
+import NewsPanel from "../../components/NewsPanel";
+import Sidebar from "../../components/Sidebar";
+import api from "../../services/api";
 import "./Home.css";
+
+const LIVE_STATUSES = new Set([
+  "IN_PLAY",
+  "PAUSED",
+  "EXTRA_TIME",
+  "PENALTY_SHOOTOUT",
+]);
+
+const getDate = (offset = 0) => {
+  const date = new Date();
+  date.setDate(date.getDate() + offset);
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+};
+
+const dateOptions = [
+  { label: "Ontem", value: getDate(-1) },
+  { label: "Hoje", value: getDate(0) },
+  { label: "Amanhã", value: getDate(1) },
+];
 
 function Home() {
   const { isAuthenticated, user } = useAuth();
-
   const [matches, setMatches] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(getDate());
+  const [selectedLeague, setSelectedLeague] = useState(null);
+  const [liveOnly, setLiveOnly] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
-  const leagues = [
-    "Liga Portugal",
-    "Premier League",
-    "LaLiga",
-    "Serie A",
-    "Bundesliga",
-    "Champions League",
-  ];
-
-  const news = [
-    "Benfica prepara novo reforço.",
-    "Messi marca mais um golo.",
-    "UEFA divulga calendário.",
-  ];
 
   useEffect(() => {
     const loadMatches = async () => {
       try {
         setLoading(true);
+        setError("");
 
-        const response = await footballApi.get(
-  "/matches?dateFrom=2026-06-15&dateTo=2026-08-16");
+        const response = await api.get("/matches", {
+          params: { date: selectedDate, limit: 50 },
+        });
 
-        setMatches(response.data.matches.slice(0, 10));
-      } catch (err) {
-        console.error(err);
-        setError("Não foi possível carregar os jogos.");
+        setMatches(response.data.matches);
+      } catch (requestError) {
+        console.error(requestError);
+        setMatches([]);
+        setError("Não foi possível carregar os jogos. Tenta novamente.");
       } finally {
         setLoading(false);
       }
     };
 
     loadMatches();
-  }, []);
+  }, [selectedDate]);
+
+  const visibleMatches = useMemo(() => {
+    return matches.filter((match) => {
+      const isSelectedLeague =
+        !selectedLeague ||
+        selectedLeague.aliases.some((name) =>
+          match.competition.name.toLowerCase().includes(name.toLowerCase())
+        );
+      const isLive = !liveOnly || LIVE_STATUSES.has(match.status);
+      return isSelectedLeague && isLive;
+    });
+  }, [liveOnly, matches, selectedLeague]);
+
+  const competitions = useMemo(() => {
+    const groupedMatches = new Map();
+
+    visibleMatches.forEach((match) => {
+      const key = match.competition.id || match.competition.name;
+      const group = groupedMatches.get(key);
+
+      if (group) {
+        group.matches.push(match);
+      } else {
+        groupedMatches.set(key, {
+          competition: match.competition,
+          matches: [match],
+        });
+      }
+    });
+
+    return Array.from(groupedMatches.values());
+  }, [visibleMatches]);
+
+  const formattedDate = new Date(`${selectedDate}T12:00:00`).toLocaleDateString(
+    "pt-PT",
+    { weekday: "long", day: "numeric", month: "long" }
+  );
 
   return (
     <>
       <Navbar />
 
-      <main className="container-fluid py-4">
+      <main className="fc-home-shell">
+        <div className="fc-home-grid">
+          <Sidebar
+            selectedLeague={selectedLeague}
+            onSelectLeague={setSelectedLeague}
+          />
 
-        <div className="row g-4">
-
-          {/* Competições */}
-          <aside className="col-lg-3">
-
-            <div className="fc-card">
-
-              <h5 className="mb-4">🏆 Competições</h5>
-
-              {leagues.map((league) => (
-                <button
-                  key={league}
-                  className="fc-league-btn"
-                >
-                  {league}
-                </button>
-              ))}
-
-            </div>
-
-          </aside>
-
-          {/* Jogos */}
-
-          <section className="col-lg-6">
-
-            <div className="fc-card">
-
-              <div className="d-flex justify-content-between align-items-center mb-4">
-
-                <h4 className="mb-0">
-                  Jogos
-                </h4>
-
-                {isAuthenticated && (
-                  <span className="text-success fw-semibold">
-                    👋 {user?.name}
-                  </span>
-                )}
-
+          <section className="fc-feed" aria-label="Jogos">
+            <header className="fc-feed-toolbar">
+              <div>
+                <span className="fc-feed-eyebrow">
+                  <IoCalendarOutline aria-hidden="true" />
+                  {formattedDate}
+                </span>
+                <h1>
+                  {liveOnly
+                    ? "Jogos ao vivo"
+                    : selectedLeague?.name || "Jogos de futebol"}
+                </h1>
               </div>
 
-              {loading && (
-                <p>A carregar jogos...</p>
+              {isAuthenticated && (
+                <span className="fc-welcome">Olá, {user?.name}</span>
               )}
+            </header>
 
-              {error && (
-                <div className="alert alert-danger">
-                  {error}
-                </div>
-              )}
-
-              {!loading &&
-                !error &&
-                matches.map((match) => (
-                  <div
-                    key={match.id}
-                    className="fc-match"
-                  >
-
-                    <small className="text-secondary">
-                      {match.competition.name}
-                    </small>
-
-                    <div className="d-flex justify-content-between align-items-center mt-2">
-
-                      <strong>
-                        {match.homeTeam.name}
-                      </strong>
-
-                      <span className="badge bg-success px-3 py-2">
-
-                        {match.status === "TIMED"
-                          ? new Date(match.utcDate).toLocaleTimeString(
-                              "pt-PT",
-                              {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              }
-                            )
-                          : `${match.score.fullTime.home ?? "-"} - ${
-                              match.score.fullTime.away ?? "-"
-                            }`}
-
-                      </span>
-
-                      <strong>
-                        {match.awayTeam.name}
-                      </strong>
-
-                    </div>
-
-                  </div>
-                ))}
-
+            <div className="fc-date-navigation" aria-label="Escolher data">
+              {dateOptions.map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  className={selectedDate === option.value ? "active" : ""}
+                  onClick={() => {
+                    setSelectedDate(option.value);
+                    setLiveOnly(false);
+                  }}
+                >
+                  {option.label}
+                </button>
+              ))}
+              <span className="fc-date-divider" aria-hidden="true" />
+              <button
+                type="button"
+                className={`fc-live-filter ${liveOnly ? "active" : ""}`}
+                onClick={() => setLiveOnly((current) => !current)}
+              >
+                <IoRadioButtonOn aria-hidden="true" />
+                Ao vivo
+              </button>
             </div>
 
+            {loading && (
+              <div className="fc-state-card" role="status">
+                <span className="fc-loader" aria-hidden="true" />
+                <p>A carregar jogos...</p>
+              </div>
+            )}
+
+            {!loading && error && (
+              <div className="fc-state-card is-error">
+                <p>{error}</p>
+                <button type="button" onClick={() => setSelectedDate(getDate())}>
+                  Voltar a hoje
+                </button>
+              </div>
+            )}
+
+            {!loading && !error && competitions.length === 0 && (
+              <div className="fc-state-card">
+                <span className="fc-empty-ball" aria-hidden="true">⚽</span>
+                <h2>Nenhum jogo encontrado</h2>
+                <p>
+                  {liveOnly
+                    ? "Não existem jogos ao vivo neste momento."
+                    : "Não há jogos disponíveis para esta data ou competição."}
+                </p>
+              </div>
+            )}
+
+            {!loading &&
+              !error &&
+              competitions.map((group) => (
+                <CompetitionCard
+                  key={group.competition.id || group.competition.name}
+                  competition={group.competition}
+                  matches={group.matches}
+                  canFavorite={isAuthenticated}
+                />
+              ))}
           </section>
 
-          {/* Notícias */}
-
-          <aside className="col-lg-3">
-
-            <div className="fc-card">
-
-              <h5 className="mb-4">
-                📰 Últimas Notícias
-              </h5>
-
-              {news.map((item, index) => (
-                <div
-                  key={index}
-                  className="fc-news"
-                >
-                  {item}
-                </div>
-              ))}
-
-            </div>
-
-          </aside>
-
+          <NewsPanel isAuthenticated={isAuthenticated} />
         </div>
-
       </main>
     </>
   );

@@ -1,173 +1,166 @@
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, NavLink, useNavigate, useSearchParams } from "react-router-dom";
+import {
+  IoClose,
+  IoMenu,
+  IoSearch,
+  IoSettingsSharp,
+} from "react-icons/io5";
 import { useAuth } from "../context/AuthContext";
-import { IoSettingsSharp } from "react-icons/io5";
 import logo from "../assets/logo.png";
 import "./Navbar.css";
 
-function Navbar() {
-  const { isAuthenticated, user, logout } = useAuth();
+const links = [
+  { label: "Home", to: "/" },
+  { label: "Competições", to: "/competitions" },
+  { label: "Equipas", to: "/teams" },
+  { label: "Notícias", to: "/news" },
+];
+
+function Search({ mobile = false, onSearch }) {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const query = searchParams.get("q") || "";
+  const [value, setValue] = useState(query);
+
+  useEffect(() => {
+    setValue(query);
+  }, [query]);
+
+  const submitSearch = (event) => {
+    event.preventDefault();
+    const nextQuery = value.trim();
+
+    navigate(nextQuery ? `/search?q=${encodeURIComponent(nextQuery)}` : "/teams");
+    onSearch?.();
+  };
 
   return (
-    <nav className="navbar navbar-expand-lg fc-navbar">
-      <div className="container-xxl">
+    <form
+      className={`fc-search ${mobile ? "fc-search-mobile" : "fc-search-desktop"}`}
+      role="search"
+      onSubmit={submitSearch}
+    >
+      <button
+        type="submit"
+        className="fc-search-submit"
+        aria-label="Executar pesquisa"
+      >
+        <IoSearch aria-hidden="true" />
+      </button>
+      <input
+        type="search"
+        aria-label="Pesquisar"
+        placeholder="Pesquisar equipa ou competição..."
+        value={value}
+        onChange={(event) => setValue(event.target.value)}
+      />
+      {value && (
+        <button
+          type="button"
+          className="fc-search-clear"
+          aria-label="Limpar pesquisa"
+          onClick={() => {
+            setValue("");
+            navigate("/teams");
+            onSearch?.();
+          }}
+        >
+          <IoClose />
+        </button>
+      )}
+    </form>
+  );
+}
 
-        {/* Logo */}
-        <Link className="navbar-brand" to="/">
-          <img
-            src={logo}
-            alt="FootCentral"
-            className="fc-navbar-logo"
-          />
+function Navbar() {
+  const { isAuthenticated, user, logout } = useAuth();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
+
+  const closeMenus = () => {
+    setMenuOpen(false);
+    setAccountOpen(false);
+  };
+
+  return (
+    <nav className="fc-navbar" aria-label="Navegação principal">
+      <div className="fc-navbar-inner">
+        <Link className="fc-navbar-brand" to="/" onClick={closeMenus}>
+          <img src={logo} alt="FootCentral" className="fc-navbar-logo" />
         </Link>
 
-        {/* Pesquisa */}
-        <div className="fc-search d-none d-lg-block">
-          <input
-            className="form-control"
-            type="text"
-            placeholder="Pesquisar equipa, jogador ou competição..."
-          />
-        </div>
+        <Search onSearch={closeMenus} />
 
-        {/* Menu Mobile */}
         <button
-          className="navbar-toggler"
+          className="fc-menu-btn"
           type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarMenu"
+          aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen((current) => !current)}
         >
-          <span className="navbar-toggler-icon"></span>
+          {menuOpen ? <IoClose /> : <IoMenu />}
         </button>
 
-        {/* Conteúdo */}
-        <div
-          className="collapse navbar-collapse"
-          id="navbarMenu"
-        >
-          <ul className="navbar-nav mx-auto">
+        <div className={`fc-nav-content ${menuOpen ? "show" : ""}`}>
+          <Search mobile onSearch={closeMenus} />
 
-            <li className="nav-item">
-              <Link className="nav-link" to="/">
-                Home
-              </Link>
-            </li>
-
-            <li className="nav-item">
-              <Link className="nav-link" to="/competitions">
-                Competições
-              </Link>
-            </li>
-
-            <li className="nav-item">
-              <Link className="nav-link" to="/teams">
-                Equipas
-              </Link>
-            </li>
-
-            <li className="nav-item">
-              <Link className="nav-link" to="/news">
-                Notícias
-              </Link>
-            </li>
-
+          <ul className="fc-nav-links">
+            {links.map((link) => (
+              <li key={link.to}>
+                <NavLink
+                  to={link.to}
+                  onClick={closeMenus}
+                  className={({ isActive }) =>
+                    `fc-nav-link ${isActive ? "active" : ""}`
+                  }
+                >
+                  {link.label}
+                </NavLink>
+              </li>
+            ))}
           </ul>
 
-          {/* Menu da Conta */}
-
-          <div className="dropdown">
-
+          <div className="fc-account-menu">
             <button
-              className="btn fc-profile-btn"
+              className="fc-profile-btn"
               type="button"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
+              aria-label="Abrir menu da conta"
+              aria-expanded={accountOpen}
+              onClick={() => setAccountOpen((current) => !current)}
             >
-              <IoSettingsSharp size={22} />
+              <IoSettingsSharp size={21} />
             </button>
 
-            <ul className="dropdown-menu dropdown-menu-end fc-dropdown">
-
-              {isAuthenticated ? (
-                <>
-                  <li>
-                    <h6 className="dropdown-header">
-                      {user?.name}
-                    </h6>
-                  </li>
-
-                  <li>
-                    <hr className="dropdown-divider" />
-                  </li>
-
-                  <li>
-                    <Link
-                      className="dropdown-item"
-                      to="/profile"
-                    >
-                      Perfil
-                    </Link>
-                  </li>
-
-                  <li>
-                    <Link
-                      className="dropdown-item"
-                      to="/favorites"
-                    >
-                      Favoritos
-                    </Link>
-                  </li>
-
-                  <li>
-                    <Link
-                      className="dropdown-item"
-                      to="/settings"
-                    >
-                      Definições
-                    </Link>
-                  </li>
-
-                  <li>
-                    <hr className="dropdown-divider" />
-                  </li>
-
-                  <li>
+            {accountOpen && (
+              <div className="fc-dropdown">
+                {isAuthenticated ? (
+                  <>
+                    <span className="fc-dropdown-user">{user?.name}</span>
+                    <Link to="/profile" onClick={closeMenus}>Perfil</Link>
+                    <Link to="/favorites" onClick={closeMenus}>Favoritos</Link>
+                    <Link to="/settings" onClick={closeMenus}>Definições</Link>
                     <button
                       type="button"
-                      className="dropdown-item text-danger"
-                      onClick={logout}
+                      className="is-danger"
+                      onClick={() => {
+                        logout();
+                        closeMenus();
+                      }}
                     >
                       Terminar sessão
                     </button>
-                  </li>
-                </>
-              ) : (
-                <>
-                  <li>
-                    <Link
-                      className="dropdown-item"
-                      to="/login"
-                    >
-                      Iniciar sessão
-                    </Link>
-                  </li>
-
-                  <li>
-                    <Link
-                      className="dropdown-item"
-                      to="/register"
-                    >
-                      Criar conta
-                    </Link>
-                  </li>
-                </>
-              )}
-
-            </ul>
-
+                  </>
+                ) : (
+                  <>
+                    <Link to="/login" onClick={closeMenus}>Iniciar sessão</Link>
+                    <Link to="/register" onClick={closeMenus}>Criar conta</Link>
+                  </>
+                )}
+              </div>
+            )}
           </div>
-
         </div>
-
       </div>
     </nav>
   );
