@@ -7,9 +7,19 @@ const sequelize = new Sequelize(
   env.database.password,
   {
     host: env.database.host,
-    port: env.database.port,
+    port: Number(env.database.port),
     dialect: 'postgres',
     logging: env.nodeEnv === 'development' ? console.log : false,
+
+    dialectOptions:
+      env.nodeEnv === 'production'
+        ? {
+            ssl: {
+              require: true,
+              rejectUnauthorized: false,
+            },
+          }
+        : {},
   }
 );
 
@@ -19,7 +29,10 @@ const connectDatabase = async () => {
 };
 
 const syncDatabase = async () => {
-  await sequelize.sync({ alter: env.nodeEnv === 'development' });
+  await sequelize.sync({
+    alter: env.nodeEnv === 'development',
+  });
+
   console.log('Database models synchronized successfully.');
 };
 
