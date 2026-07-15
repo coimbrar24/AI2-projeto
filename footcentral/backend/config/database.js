@@ -1,27 +1,17 @@
-const { Sequelize } = require('sequelize');
-const { env } = require('./env');
+const { Sequelize } = require("sequelize");
+const { env } = require("./env");
 
-const sequelize = new Sequelize(
-  env.database.name,
-  env.database.user,
-  env.database.password,
-  {
-    host: env.database.host,
-    port: Number(env.database.port),
-    dialect: 'postgres',
-    logging: env.nodeEnv === 'development' ? console.log : false,
+const sequelize = new Sequelize(process.env.DATABASE_URL, {
+  dialect: "postgres",
+  logging: false,
+  dialectOptions: {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false,
+    },
+  },
+});
 
-    dialectOptions:
-      env.nodeEnv === 'production'
-        ? {
-            ssl: {
-              require: true,
-              rejectUnauthorized: false,
-            },
-          }
-        : {},
-  }
-);
 
 const connectDatabase = async () => {
   await sequelize.authenticate();
